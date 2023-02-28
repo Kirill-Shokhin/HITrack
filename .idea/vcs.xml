@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/HITracker/Networks/Pose2D/ViTPose_pytorch" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HITracker/Networks/PoseTo3D/MHFormer" vcs="Git" />
+  </component>
+</project>
