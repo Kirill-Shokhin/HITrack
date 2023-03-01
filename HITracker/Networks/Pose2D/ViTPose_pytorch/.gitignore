@@ -1,6 +1,0 @@
-**/*.pth
-**/*.pt
-**/__pycache__
-**/COCO/
-.DS_Store
-runs
