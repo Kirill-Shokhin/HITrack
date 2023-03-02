@@ -26,7 +26,7 @@ class MHFORMER:
                                       f'MHFormer/models/{model_version}/{model_name}')
 
         if not os.path.exists(self.model_path):
-            download_models(cid, self.model_path, f"MHformer {model_version}:")
+            download_models(cid, self.model_path, f"MHformer {model_version}")
 
         self.layers, self.channel, self.d_hid, self.frames = 3, 512, 1024, int(model_version)
         self.n_joints, self.out_joints = 17, 17

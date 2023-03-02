@@ -25,10 +25,10 @@ class HITrack:
         self.recover_2d(merge_dict)
         self.compute_3d()
         self.compute_scene()
-        self.visualize('3D_scene')
+        self.visualize('3D_scene', original_sound=True)
 
-    def compute_2d(self, save=True):
-        self.ht = HumanTrack(self.video_path, wait_recovery=self.wait_recovery)
+    def compute_2d(self, yolo='yolov7', vitpose='b', save=True):
+        self.ht = HumanTrack(self.video_path, yolo, vitpose, self.wait_recovery)
         keypoints_2d = self.ht.compute()
         self.data.update(keypoints_2d, save=save)
 
@@ -40,8 +40,8 @@ class HITrack:
         keypoints_2d = recover_kps(keypoints_2d, self.wait_recovery)
         self.data.update(keypoints_2d, save=save)
 
-    def compute_3d(self, save=True):
-        lifter = MHFORMER('351')
+    def compute_3d(self, mhformer='351', save=True):
+        lifter = MHFORMER(mhformer)
         keypoints_3d = lifter(self.data.keypoints_2d)
         self.data.update(keypoints_3d=keypoints_3d, save=save)
 
@@ -49,26 +49,25 @@ class HITrack:
         scene = poses2scene(self.data)
         self.data.update(scene=scene, save=save)
 
-    def visualize(self, how='scene_3D', id_=None, skeleton_format="H36", end=None):
-        # scene_matplotlib(self.data.scene, video_path='videos/dance2.VitPose_b.tracking.mp4')
+    def visualize(self, how='3D_scene', id_=None, skeleton_format="H36", end=None, compress=False, original_sound=False):
         vis = Visualizer(self.data, video_path=self.video_path, skeleton_format=skeleton_format)
-        vis(how, id_, end)
+        vis(how, id_, end, compress, original_sound)
 
 
 class HumanTrack:
     def __init__(self, video_path, yolo_model='yolov7', vitpose_model='b', wait_recovery=15):
 
-        self.cap = OpenVideo(video_path)
         self.video_path = video_path
 
         self.wait_recovery = wait_recovery
         self.keypoint_weights = WEIGHTS_COCO
-
-        self.pose = VITPOSE(vitpose_model)
+        
         self.det = YOLOv7(yolo_model)
+        self.pose = VITPOSE(vitpose_model)
         self.keypoints = []
 
     def compute(self):
+        self.cap = OpenVideo(self.video_path)
         for i in range(self.cap.length):
             rgb = self.cap.read()
             boxes = self.det(rgb)

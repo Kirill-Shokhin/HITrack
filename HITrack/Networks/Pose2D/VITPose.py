@@ -25,7 +25,7 @@ class VITPOSE:
         self.model_path = os.path.join(os.path.dirname(__file__), 'VitPose', 'models', model_name)
 
         if not os.path.exists(self.model_path):
-            download_models(cid, self.model_path, f"{model_name.split('.')[0]}:")
+            download_models(cid, self.model_path, f"{model_name.split('.')[0]}")
 
         self.model_img_size = self.cfg.data_cfg['image_size']
         self.device = torch.device("cuda") if torch.cuda.is_available() else torch.device('cpu')

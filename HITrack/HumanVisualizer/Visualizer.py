@@ -25,7 +25,6 @@ class Visualizer:
     def __call__(self, how='3D_scene', id_=None, end=None, compress=False, original_sound=False):
         self.video_out = f'{self.video_path}.{how}.mp4'
         self.len_video = self.data.shape[1] if end is None else int(end)
-        fig = plt.figure(figsize=(10, 10), dpi=self.size[1] / 10)
 
         if how == '3D_scene':
             flat = self.data.scene[self.data.ids != -1].reshape(-1, 3)
@@ -42,7 +41,7 @@ class Visualizer:
             assert how in ['2D', '3D_single', '3D_scene']
 
         if self.video_path:
-            cap = OpenVideo(self.video_path, end=self.len_video)
+            cap = OpenVideo(self.video_path, self.len_video, False)
             self.fps = cap.fps
             w, h = cap.shape
             self.size = (w, h) if how == '2D' else (w + h, h)
@@ -51,7 +50,8 @@ class Visualizer:
             keypoints_2d = self.data.keypoints_2d
             if self.skeleton_format == 'H36':
                 keypoints_2d = coco2h36(keypoints_2d)
-
+        
+        fig = plt.figure(figsize=(10, 10), dpi=self.size[1] / 10)
         result = cv2.VideoWriter(self.video_out, cv2.VideoWriter_fourcc(*'MP4V'), self.fps, self.size)
         for i in tqdm(range(self.len_video)):
 
@@ -168,9 +168,9 @@ def scene_plotly(scene, thickness=4, show_axes=False):
                  yaxis=dict(nticks=5, range=min_max[1], showticklabels=show_axes, title=title),
                  zaxis=dict(nticks=5, range=min_max[2], showticklabels=show_axes, title=title))
 
-    camera = dict(up=dict(x=0, y=-1, z=0),
+    camera = dict(up=dict(x=0, y=0, z=1),
                   center=dict(x=0, y=0, z=0),
-                  eye=dict(x=-0.5 * scale, y=-1 * scale, z=-2 * scale))
+                  eye=dict(x=-0.5 * scale, y=-1.7 * scale, z=0.6 * scale))
 
     fig.update_layout(showlegend=False,
                       width=900, height=500, margin=dict(t=10, r=0, l=0, b=0), scene=scene,

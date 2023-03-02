@@ -65,12 +65,13 @@ def merge_track(keypoints, merge_dict: dict):
     return keypoints
 
 
-def world2cam(pose, pose3d, cameraMatrix, distCoeffs):
-    rvec, tvec = cv2.solvePnP(pose3d, pose, cameraMatrix, distCoeffs, flags=cv2.SOLVEPNP_UPNP)[1:]
+def world2cam(pose, pose3d, cameraMatrix, distCoeffs, rvec=None, tvec=None):
+    use = False if rvec is None else True
+    rvec, tvec = cv2.solvePnP(pose3d, pose, cameraMatrix, distCoeffs, rvec, tvec, use)[1:]
     R = cv2.Rodrigues(rvec)[0]
     x, y, z = R @ pose3d.T + tvec
     x, y, z = x, z, -y
-    return np.array((x, y, z)).T
+    return np.array((x, y, z)).T, rvec, tvec
 
 
 def CreateCamera(img_size, focus=1):
@@ -88,9 +89,17 @@ def poses2scene(data, img_size=(1920, 1080)):
     exist = data.ids != -1
     scene = np.zeros_like(data.keypoints_3d)
     cameraMatrix, distCoeffs = CreateCamera(img_size)
+    
+    lis = []
+    rvec, tvec = None, None
+    for pose, pose3d in zip(coco2h36(data.keypoints_2d)[exist], data.keypoints_3d[exist]):
+        sc, rvec, tvec = world2cam(pose, pose3d, cameraMatrix, distCoeffs, rvec, tvec) 
+        lis.append(sc)
+        
+    scene[exist] = lis
 
-    scene[exist] = [world2cam(pose, pose3d, cameraMatrix, distCoeffs) for pose, pose3d
-                                        in zip(coco2h36(data.keypoints_2d)[exist], data.keypoints_3d[exist])]
+#     scene[exist] = [world2cam(pose, pose3d, cameraMatrix, distCoeffs) for pose, pose3d
+#                                         in zip(coco2h36(data.keypoints_2d)[exist], data.keypoints_3d[exist])]
     return scene
 
 
@@ -159,28 +168,35 @@ class VideoDataKeypoints:
 
 
 class OpenVideo:
-    def __init__(self, video_path, end=None):
+    def __init__(self, video_path, end=None, pbar=True):
         self.cap = cv2.VideoCapture(video_path)
         self.shape = int(self.cap.get(3)), int(self.cap.get(4))
         self.fps = self.cap.get(5)
         self.length = end if end else int(self.cap.get(7))
+        self.pbar = pbar
         self.frame = 0
-        self.tqdm = tqdm(total=self.length)
+        
+        if pbar:
+            self.tqdm = tqdm(total=self.length)
 
     def read(self):
         ret, bgr = self.cap.read()
         self.frame += 1
-        self.tqdm.update(1)
+        if self.pbar:
+            self.tqdm.update(1)
+            
         if self.frame == self.length:
             self.cap.release()
-            self.tqdm.close()
+            if self.pbar:
+                self.tqdm.close()
 
         if ret:
             rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
             return rgb
         else:
             self.cap.release()
-            self.tqdm.close()
+            if self.pbar:
+                self.tqdm.close()
 
 
 def coco2h36(keypoints):
