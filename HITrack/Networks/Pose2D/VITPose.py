@@ -1,7 +1,7 @@
 from .VitPose.model import ViTPose
 from .VitPose.utils.top_down_eval import keypoints_from_heatmaps
 from .VitPose.configs import ViTPose_base_coco_256x192, ViTPose_large_coco_256x192, ViTPose_huge_coco_256x192
-from utils import download_models
+from HITrack.utils import download_models
 
 from torchvision.transforms import transforms
 import numpy as np
@@ -28,7 +28,7 @@ class VITPOSE:
             download_models(cid, self.model_path, f"{model_name.split('.')[0]}")
 
         self.model_img_size = self.cfg.data_cfg['image_size']
-        self.device = device
+        self.device = torch.device(device)
         self.model = self.model_init()
 
     def predict(self, img):
@@ -65,5 +65,5 @@ class VITPOSE:
     def model_init(self):
         model = ViTPose(self.cfg.model)
         model.load_state_dict(torch.load(self.model_path)['state_dict'])
-        model.to(torch.device(self.device)).eval()
+        model.to(self.device).eval()
         return model

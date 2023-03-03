@@ -1,6 +1,6 @@
 from .MHFormer.mhformer import Model
 from .MHFormer.camera import camera_to_world
-from utils import coco2h36, clear, download_models
+from HITrack.utils import coco2h36, clear, download_models
 
 from torch.utils.data import DataLoader
 from tqdm.notebook import tqdm
