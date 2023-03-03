@@ -20,6 +20,7 @@ def download_models(cid, path='', title=None):
         filename = response.headers['Content-Disposition'].split('"')[1]
         pbar = tqdm(response.iter_content(1024), title,
                     total=total_size, unit="B", unit_scale=True, unit_divisor=1024)
+        os.makedirs(path, exist_ok=True)
         with open(os.path.join(path, filename), "wb") as f:
             for data in pbar.iterable:
                 f.write(data)
@@ -98,8 +99,6 @@ def poses2scene(data, img_size=(1920, 1080)):
         
     scene[exist] = lis
 
-#     scene[exist] = [world2cam(pose, pose3d, cameraMatrix, distCoeffs) for pose, pose3d
-#                                         in zip(coco2h36(data.keypoints_2d)[exist], data.keypoints_3d[exist])]
     return scene
 
 

@@ -70,9 +70,9 @@ class HumanTrack:
         self.keypoints = []
 
     def compute(self):
-        self.cap = OpenVideo(self.video_path)
-        for i in range(self.cap.length):
-            rgb = self.cap.read()
+        cap = OpenVideo(self.video_path)
+        for i in range(cap.length):
+            rgb = cap.read()
             boxes = self.det(rgb)
             skeletons = self.pose(rgb, boxes)
 
@@ -85,7 +85,7 @@ class HumanTrack:
             skeletons, ids = self.t.current()
             self.keypoints.append([i, skeletons, ids])
 
-        keypoints_2d = np.zeros((self.t.cur_max_id + 1, self.cap.length, len(self.keypoint_weights), 2))
+        keypoints_2d = np.zeros((self.t.cur_max_id + 1, cap.length, len(self.keypoint_weights), 2))
         for i, skeletons, ids in self.keypoints:
             keypoints_2d[ids, i] = skeletons[:, :, :2]
 
