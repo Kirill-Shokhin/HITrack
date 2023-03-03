@@ -1,4 +1,3 @@
-
 import math
 import warnings
 
@@ -8,7 +7,6 @@ import collections.abc
 import torch
 from functools import partial
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.utils.checkpoint as checkpoint
 from torch import Tensor
 

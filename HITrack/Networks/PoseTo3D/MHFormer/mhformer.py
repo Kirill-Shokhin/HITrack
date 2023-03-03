@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 from einops import rearrange
 from .module.trans import Transformer as Transformer_encoder

@@ -4,12 +4,14 @@ from .constants import WEIGHTS_COCO
 from .utils import OpenVideo, VideoDataKeypoints, recover_kps, merge_track, poses2scene
 from .HumanVisualizer import Visualizer
 import numpy as np
+import torch
 import os
 
 
 class HITrack:
     def __init__(self, video_path, wait_recovery=20):
         self.wait_recovery = wait_recovery
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
         self.video_path = video_path
         self.npz_path = ''.join(video_path.split('.')[:-1])+'.npz'
@@ -28,7 +30,7 @@ class HITrack:
         self.visualize('3D_scene', original_sound=True)
 
     def compute_2d(self, yolo='yolov7', vitpose='b', save=True):
-        self.ht = HumanTrack(self.video_path, yolo, vitpose, self.wait_recovery)
+        self.ht = HumanTrack(self.video_path, yolo, vitpose, self.wait_recovery, self.device)
         keypoints_2d = self.ht.compute()
         self.data.update(keypoints_2d, save=save)
 
@@ -41,7 +43,7 @@ class HITrack:
         self.data.update(keypoints_2d, save=save)
 
     def compute_3d(self, mhformer='351', save=True):
-        lifter = MHFORMER(mhformer)
+        lifter = MHFORMER(mhformer, device=self.device)
         keypoints_3d = lifter(self.data.keypoints_2d)
         self.data.update(keypoints_3d=keypoints_3d, save=save)
 
@@ -55,15 +57,16 @@ class HITrack:
 
 
 class HumanTrack:
-    def __init__(self, video_path, yolo_model='yolov7', vitpose_model='b', wait_recovery=15):
+    def __init__(self, video_path, yolo_model='yolov7', vitpose_model='b', wait_recovery=15, device='cuda'):
 
         self.video_path = video_path
+        self.device = device
 
         self.wait_recovery = wait_recovery
         self.keypoint_weights = WEIGHTS_COCO
         
-        self.det = YOLOv7(yolo_model)
-        self.pose = VITPOSE(vitpose_model)
+        self.det = YOLOv7(yolo_model, device=device)
+        self.pose = VITPOSE(vitpose_model, device=device)
         self.keypoints = []
 
     def compute(self):

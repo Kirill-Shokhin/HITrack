@@ -2,7 +2,6 @@
 import torch
 import torch.nn as nn
 from .. import constant_init, normal_init
-
 from .. import pose_pck_accuracy, flip_back, resize
 import torch.nn.functional as F
 from .topdown_heatmap_base_head import TopdownHeatmapBaseHead

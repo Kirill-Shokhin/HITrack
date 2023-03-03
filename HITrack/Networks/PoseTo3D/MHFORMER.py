@@ -1,6 +1,6 @@
 from .MHFormer.mhformer import Model
 from .MHFormer.camera import camera_to_world
-from HITrack.utils import coco2h36, clear, download_models
+from utils import coco2h36, clear, download_models
 
 from torch.utils.data import DataLoader
 from tqdm.notebook import tqdm
@@ -17,7 +17,7 @@ mhformer_model_map = {
 
 
 class MHFORMER:
-    def __init__(self, model_version='351', batch_size='auto'):
+    def __init__(self, model_version='351', batch_size='auto', device='cuda'):
         if model_version not in mhformer_model_map.keys():
             raise AssertionError(f'Only {", ".join(mhformer_model_map.keys())} models exist')
 
@@ -32,6 +32,7 @@ class MHFORMER:
         self.n_joints, self.out_joints = 17, 17
         self.pad = self.frames // 2
         self.batch_size = self.get_batch_size() if batch_size == 'auto' else int(batch_size)
+        self.device = device
         self.model = self.load_model()
 
     def __call__(self, keypoints_2d):
@@ -131,7 +132,7 @@ class MHFORMER:
         return camera_to_world(post_out, R=rot, t=0)
 
     def load_model(self):
-        model = Model(self).cuda()
+        model = Model(self).to(torch.device(self.device))
         model_dict = model.state_dict()
         pre_dict = torch.load(self.model_path)
         for name, key in model_dict.items():

@@ -4,17 +4,27 @@ import random
 import numpy as np
 
 from collections import OrderedDict
-import os.path as osp
+# import os.path as osp
 
 import torch
 import torch.nn as nn
 
 from torch import distributed as dist
 from torch.nn.parallel import DataParallel, DistributedDataParallel
-
-from .dist_util import get_dist_info
+from typing import Tuple
+# from .dist_util import get_dist_info
 
 MODULE_WRAPPERS = [DataParallel, DistributedDataParallel]
+
+
+def get_dist_info() -> Tuple[int, int]:
+    if dist.is_available() and dist.is_initialized():
+        rank = dist.get_rank()
+        world_size = dist.get_world_size()
+    else:
+        rank = 0
+        world_size = 1
+    return rank, world_size
 
 
 def init_random_seed(seed=None, device='cuda'):
