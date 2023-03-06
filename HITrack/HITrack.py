@@ -1,7 +1,7 @@
 from .Networks import YOLOv7, VITPOSE, MHFORMER
 from .KeypointTracker import KeypointTracker
 from .constants import WEIGHTS_COCO
-from .utils import OpenVideo, VideoDataKeypoints, recover_kps, merge_track, poses2scene
+from .utils import OpenVideo, VideoDataKeypoints, recover_kps, merge_track, poses2scene, clear
 from .HumanVisualizer import Visualizer
 import numpy as np
 import torch
@@ -32,6 +32,7 @@ class HITrack:
     def compute_2d(self, yolo='yolov7', vitpose='b', save=True):
         self.ht = HumanTrack(self.video_path, yolo, vitpose, self.wait_recovery, self.device)
         keypoints_2d = self.ht.compute()
+        clear()
         self.data.update(keypoints_2d, save=save)
 
     def recover_2d(self, merge_dict=None, save=True):
@@ -89,4 +90,5 @@ class HumanTrack:
         for i, skeletons, ids in self.keypoints:
             keypoints_2d[ids, i] = skeletons[:, :, :2]
 
+        del [self.det, self.pose]
         return keypoints_2d

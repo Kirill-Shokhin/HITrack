@@ -1,22 +1,13 @@
 import cv2
 import numpy as np
-from ..constants import PERSON_SKELETONS
+from ..constants import PERSON_SKELETONS, COLORS
 
 # import matplotlib
 # COLORS = np.int32(255*np.array([matplotlib.cm.get_cmap('tab20')((x + 0.05) / 20)[:3] for x in range(20)])).tolist()
-COLORS = [[31, 119, 180], [174, 199, 232], [255, 127, 14], [255, 187, 120],
-          [44, 160, 44], [152, 223, 138], [214, 39, 40], [255, 152, 150],
-          [148, 103, 189], [197, 176, 213], [140, 86, 75], [196, 156, 148], 
-          [227, 119, 194], [247, 182, 210], [127, 127, 127], [199, 199, 199], 
-          [188, 189, 34], [219, 219, 141], [23, 190, 207], [158, 218, 229]]
-
-COLORS_CSS = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c','#98df8a','#d62728',
-              '#ff9896','#9467bd','#c5b0d5','#8c564b','#c49c94','#e377c2','#f7b6d2',
-              '#7f7f7f','#c7c7c7','#bcbd22','#dbdb8d','#17becf','#9edae5']
 
 
 class HumanVisualizer:
-    def __init__(self, label_scale=1, thickness=2, alpha=0.4, box_size=20, thickness_text=2, skeleton_format='COCO'):
+    def __init__(self, label_scale=1.2, thickness=3, alpha=0.5, box_size=20, thickness_text=2, skeleton_format='COCO'):
         
         self.colors = COLORS
         self.label_scale = label_scale

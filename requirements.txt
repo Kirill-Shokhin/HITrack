@@ -12,3 +12,4 @@ matplotlib>=3.5.2
 filterpy>=1.4.5
 catboost>=1.1.1
 yolov7detect>=1.0.1
+scipy>=1.9.1

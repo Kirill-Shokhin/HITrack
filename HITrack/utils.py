@@ -1,3 +1,4 @@
+from scipy.signal import savgol_filter
 from tqdm.notebook import tqdm
 from itertools import groupby
 import numpy as np
@@ -86,7 +87,7 @@ def CreateCamera(img_size, focus=1):
     return cameraMatrix, distCoeffs
 
 
-def poses2scene(data, img_size=(1920, 1080)):
+def poses2scene(data, img_size=(1920, 1080), smooth=True):
     exist = data.ids != -1
     scene = np.zeros_like(data.keypoints_3d)
     cameraMatrix, distCoeffs = CreateCamera(img_size)
@@ -99,6 +100,20 @@ def poses2scene(data, img_size=(1920, 1080)):
         
     scene[exist] = lis
 
+    if smooth:
+        scene = smoothing(scene)
+
+    return scene
+
+
+def smoothing(scene, window=11, poly=5):
+    scene = scene.copy()
+    n_ids, n_frames, n_keypoints, n_dims = scene.shape
+    for id_ in range(n_ids):
+        for point in range(n_keypoints):
+            for dim in range(n_dims):
+                scene[id_, :, point, dim] = savgol_filter(
+                    scene[id_, :, point, dim], window, poly)
     return scene
 
 

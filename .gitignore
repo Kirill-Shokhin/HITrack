@@ -3,3 +3,6 @@
 .idea/
 .ipynb_checkpoints
 __pycache__/
+dist/
+build/
+*.egg-info/

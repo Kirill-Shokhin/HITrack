@@ -13,5 +13,5 @@ class YOLOv7:
         self.model = model
 
     def __call__(self, rgb):
-        boxes = self.model(rgb).pred[0].cpu().detach().numpy()[:, :4]
+        boxes = self.model(rgb, size=1280).pred[0].cpu().detach().numpy()[:, :4]
         return boxes

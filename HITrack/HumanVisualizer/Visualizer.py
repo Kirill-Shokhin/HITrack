@@ -1,4 +1,4 @@
-from ..constants import H36_PERSON_SKELETON, COLORS, COLORS_CSS
+from ..constants import H36_PERSON_SKELETON, COLORS
 from . import HumanVisualizer
 from ..utils import coco2h36, OpenVideo
 import cv2
@@ -156,7 +156,7 @@ def scene_plotly(scene, thickness=4, show_axes=False):
                       columns=['x', 'y', 'z', 'id_', 'frame']).apply(pd.to_numeric)
 
     fig = px.line_3d(df, x='x', y='y', z='z', color='id_', animation_frame='frame',
-                     color_discrete_sequence=COLORS_CSS)
+                     color_discrete_sequence=rgb2hex(COLORS))
 
     min_max = np.concatenate((df.min()[:3].values[None], df.max()[:3].values[None])).T
     diff = np.diff(min_max)[:, 0]
@@ -179,3 +179,7 @@ def scene_plotly(scene, thickness=4, show_axes=False):
 
     fig.update_traces(line_width=thickness)
     return fig
+
+
+def rgb2hex(colors):
+    return ["".join([hex(rgb)[2:] for rgb in c]) for c in colors]
