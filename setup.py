@@ -3,21 +3,23 @@ import os
 
 def readme():
   with open('README.md', 'r') as f:
-    return f.read()
+    text = ''.join([line for line in f if not line.startswith('http')])
+    return text
 
 def _parse_requirements(path):
   with open(path) as f:
     return [
         line.rstrip()
         for line in f
-        if not (line.isspace() or line.startswith('#'))
+        if not (line.isspace() or line.startswith('#') or line.startswith('-'))
     ]
 
 setup(
   name='HITrack',
-  version='0.1.1',
+  version='1.0.0',
   author='Kirill Shokhin',
   author_email='kashokhin@gmail.com',
+  license='MIT',
   description='3D scene on a monocular video',
   long_description=readme(),
   long_description_content_type='text/markdown',
