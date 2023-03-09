@@ -18,10 +18,10 @@ from HITrack import HITrack
 hit = HITrack('videos/dance.mp4')
 
 # 2D keypoints + tracking
-hit.compute_2d()
+hit.compute_2d(yolo='yolov7x', vitpose='b')
 
 # merging recovered tracks and broken tracks manually
-hit.recover_2d({1:6, 2:5, 3:4})
+hit.recover_2d({2:4, 3:5})
 
 # 2D to 3D by tracking
 hit.compute_3d()

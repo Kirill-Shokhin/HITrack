@@ -16,7 +16,7 @@ def _parse_requirements(path):
 
 setup(
   name='HITrack',
-  version='1.0.0',
+  version='1.0.4',
   author='Kirill Shokhin',
   author_email='kashokhin@gmail.com',
   license='MIT',
@@ -26,6 +26,7 @@ setup(
   url='https://github.com/Kirill-Shokhin/HITrack',
   packages=find_packages(),
   install_requires=_parse_requirements('requirements.txt'),
+  include_package_data=True,
   classifiers=[
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',

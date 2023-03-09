@@ -13,8 +13,11 @@ class HITrack:
         self.wait_recovery = wait_recovery
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+        if not os.path.exists(video_path):
+            raise FileNotFoundError(f"Video file '{video_path}' not found")
+
         self.video_path = video_path
-        self.npz_path = ''.join(video_path.split('.')[:-1])+'.npz'
+        self.npz_path = os.path.splitext(video_path)[0]+'.npz'
         self.data = VideoDataKeypoints(self.npz_path)
 
         if os.path.exists(self.npz_path):

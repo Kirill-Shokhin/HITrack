@@ -17,7 +17,7 @@ class KeypointTracker:
         self.frame = 0
         self.wait_recovery = wait_recovery
         self.model = CatBoostRegressor()
-        self.model.load_model(os.path.join(os.path.dirname(__file__), 'reg_model_1'))
+        self.model.load_model(os.path.join(os.path.dirname(__file__), 'reg_model_1.cbm'))
         self.cur_max_id = -1
         self.keypoint_weights = keypoint_weights
 
